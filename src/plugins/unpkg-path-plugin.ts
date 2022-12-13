@@ -1,32 +1,46 @@
 import * as esbuild from 'esbuild-wasm';
+import axios from 'axios';
 
-export const unpkgPathPlugin = () => {
+export const unpkgPathPlugin = (input: string) => {
   return {
     name: 'unpkg-path-plugin',
     setup(build: esbuild.PluginBuild) {
-      build.onResolve({ filter: /.*/ }, async (args: any) => {
-        console.log('onResolve', args);
-        return {
-          path: args.path,
-          namespace: 'a',
-        };
-      });
+      // Resolving for dummy path 'index.js'
+      build.onResolve({ filter: /^index\.js$/ }, (args: any) => ({
+        path: args.path,
+        namespace: 'a',
+      }));
+
+      // Resolving relative path './' and '../'
+      // args.resolveDir is provided by onLoad plugin
+      build.onResolve({ filter: /^\.+\// }, (args: any) => ({
+        path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href,
+        namespace: 'a',
+      }));
+
+      // Resolving package path (i.e 'lodash', 'react', etc.)
+      build.onResolve({ filter: /.*/ }, (args: any) => ({
+        path: `https://unpkg.com/${args.path}`,
+        namespace: 'a',
+      }));
+
+      build.onLoad({ filter: /^index\.js$/ }, (args: any) => ({
+        loader: 'jsx',
+        contents: input,
+      }));
 
       build.onLoad({ filter: /.*/ }, async (args: any) => {
-        console.log('onLoad', args);
+        try {
+          const { data, request } = await axios.get(args.path);
 
-        return args.path === 'index.js'
-          ? {
-              loader: 'jsx',
-              contents: `
-                import message from './message';
-                console.log(message);
-              `,
-            }
-          : {
-              loader: 'jsx',
-              contents: `export default "Hello World!";`,
-            };
+          return {
+            loader: 'jsx',
+            contents: data,
+            resolveDir: new URL('./', request.responseURL).pathname,
+          };
+        } catch (err: any) {
+          console.error('💥 Unable to fetch data from unpkg');
+        }
       });
     },
   };

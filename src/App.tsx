@@ -13,9 +13,10 @@ import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
   const [input, setInput] = useState(
-    'const App = () => (<div>Hello World</div>);'
+    'var message = require("nested-test-pkg"); console.log(message);'
   );
   const [code, setCode] = useState('');
+  const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
 
   const startService = async () => {
     try {
@@ -34,7 +35,9 @@ const App: FC = () => {
   };
 
   useEffect(() => {
-    startService().catch((err: any) => console.error(err));
+    startService()
+      .then(() => setIsDisabledSubmit(false))
+      .catch((err: any) => console.error(err));
   }, []);
 
   const onClick: MouseEventHandler<HTMLButtonElement> = async _e => {
@@ -43,10 +46,10 @@ const App: FC = () => {
     try {
       console.log('🕧 Bundling input...');
       const result = await ref.current.build({
-        entryPoints: ['index.js'],
+        entryPoints: ['index.js'], // dummy entry point for unpkgPathPlugin to load
         bundle: true,
         write: false,
-        plugins: [unpkgPathPlugin()],
+        plugins: [unpkgPathPlugin(input.trim())],
       });
 
       console.log('✅ Bundling successful');
@@ -67,7 +70,9 @@ const App: FC = () => {
         rows={10}
       />
       <br />
-      <button onClick={onClick}>Submit</button>
+      <button onClick={onClick} disabled={isDisabledSubmit}>
+        Submit
+      </button>
       <pre>{code}</pre>
     </div>
   );
