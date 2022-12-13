@@ -16,7 +16,7 @@ export const unpkgPathPlugin = () => ({
       namespace: 'a',
     }));
 
-    // Resolving package path (i.e 'lodash', 'react', etc.)
+    // Resolving module's path (i.e 'lodash', 'react', etc.)
     build.onResolve({ filter: /.*/ }, (args: any) => ({
       path: `https://unpkg.com/${args.path}`,
       namespace: 'a',

@@ -14,7 +14,7 @@ import { fetchPlugin } from './plugins/fetch-plugin';
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
   const [input, setInput] = useState(
-    'var message = require("nested-test-pkg"); console.log(message);'
+    'var message = require("react"); console.log(message);'
   );
   const [code, setCode] = useState('');
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
@@ -51,6 +51,9 @@ const App: FC = () => {
         bundle: true,
         write: false,
         plugins: [unpkgPathPlugin(), fetchPlugin(input.trim())],
+        define: {
+          global: 'window',
+        },
       });
 
       console.log('✅ Bundling successful');
