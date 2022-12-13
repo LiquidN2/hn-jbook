@@ -8,9 +8,13 @@ import {
 } from 'react';
 import * as esbuild from 'esbuild-wasm';
 
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
+
 const App: FC = () => {
-  const ref = useRef<any | null>(null);
-  const [input, setInput] = useState('');
+  const ref = useRef<typeof esbuild | null>(null);
+  const [input, setInput] = useState(
+    'const App = () => (<div>Hello World</div>);'
+  );
   const [code, setCode] = useState('');
 
   const startService = async () => {
@@ -37,16 +41,18 @@ const App: FC = () => {
     if (!ref.current || !input) return;
 
     try {
-      console.log('🕧 transforming input...');
-      const result = await ref.current.transform(input, {
-        loader: 'jsx',
-        target: 'es2015',
-      } as esbuild.TransformOptions);
+      console.log('🕧 Bundling input...');
+      const result = await ref.current.build({
+        entryPoints: ['index.js'],
+        bundle: true,
+        write: false,
+        plugins: [unpkgPathPlugin()],
+      });
 
-      console.log('✅ transformation successful');
-      setCode(result.code);
+      console.log('✅ Bundling successful');
+      setCode(result.outputFiles[0].text);
     } catch (err: any) {
-      console.error('💥 Unable to transform script');
+      console.error('💥 Unable to bundle script');
     }
   };
 
