@@ -1,7 +1,15 @@
-import { FC, ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import {
+  FC,
+  ChangeEvent,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import * as esbuild from 'esbuild-wasm';
 
 const App: FC = () => {
+  const ref = useRef<any | null>(null);
   const [input, setInput] = useState('');
   const [code, setCode] = useState('');
 
@@ -14,7 +22,8 @@ const App: FC = () => {
       });
 
       console.log('✅ Esbuild started');
-      console.log(esbuild);
+
+      ref.current = esbuild;
     } catch (err: any) {
       throw '💥 Unable to start Esbuild service';
     }
@@ -24,6 +33,23 @@ const App: FC = () => {
     startService().catch((err: any) => console.error(err));
   }, []);
 
+  const onClick: MouseEventHandler<HTMLButtonElement> = async _e => {
+    if (!ref.current || !input) return;
+
+    try {
+      console.log('🕧 transforming input...');
+      const result = await ref.current.transform(input, {
+        loader: 'jsx',
+        target: 'es2015',
+      } as esbuild.TransformOptions);
+
+      console.log('✅ transformation successful');
+      setCode(result.code);
+    } catch (err: any) {
+      console.error('💥 Unable to transform script');
+    }
+  };
+
   return (
     <div>
       <textarea
@@ -31,12 +57,11 @@ const App: FC = () => {
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
           setInput(e.target.value)
         }
-      ></textarea>
-      <button
-        onClick={(_e: MouseEvent<HTMLButtonElement>) => console.log(input)}
-      >
-        Submit
-      </button>
+        cols={50}
+        rows={10}
+      />
+      <br />
+      <button onClick={onClick}>Submit</button>
       <pre>{code}</pre>
     </div>
   );
