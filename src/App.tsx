@@ -9,6 +9,7 @@ import {
 import * as esbuild from 'esbuild-wasm';
 
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
+import { fetchPlugin } from './plugins/fetch-plugin';
 
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
@@ -49,7 +50,7 @@ const App: FC = () => {
         entryPoints: ['index.js'], // dummy entry point for unpkgPathPlugin to load
         bundle: true,
         write: false,
-        plugins: [unpkgPathPlugin(input.trim())],
+        plugins: [unpkgPathPlugin(), fetchPlugin(input.trim())],
       });
 
       console.log('✅ Bundling successful');
