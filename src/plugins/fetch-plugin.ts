@@ -15,7 +15,7 @@ export const fetchPlugin = (input: string) => ({
     build.onLoad({ filter: /.*/ }, async args => {
       try {
         const cachedResult = await localforage.getItem(args.path);
-        return cachedResult ? cachedResult : null;
+        return cachedResult ? (cachedResult as esbuild.OnLoadResult) : null;
       } catch (err: any) {
         throw err;
       }

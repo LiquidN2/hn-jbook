@@ -14,7 +14,9 @@ import { fetchPlugin } from './plugins/fetch-plugin';
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
   const [input, setInput] = useState(
-    'var message = require("react"); console.log(message);'
+    "import 'bulma/css/bulma.css';" +
+      "import message from 'nested-test-pkg';" +
+      'console.log(message);'
   );
   const [code, setCode] = useState('');
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
@@ -24,7 +26,7 @@ const App: FC = () => {
       console.log('🕧 Starting Esbuild service...');
       await esbuild.initialize({
         worker: true,
-        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.4/esbuild.wasm',
+        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.6/esbuild.wasm',
       });
 
       console.log('✅ Esbuild started');
