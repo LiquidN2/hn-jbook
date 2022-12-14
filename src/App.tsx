@@ -13,11 +13,7 @@ import { fetchPlugin } from './plugins/fetch-plugin';
 
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
-  const [input, setInput] = useState(
-    "import 'bulma/css/bulma.css';" +
-      "import message from 'nested-test-pkg';" +
-      'console.log(message);'
-  );
+  const [input, setInput] = useState('');
   const [code, setCode] = useState('');
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
 
@@ -60,6 +56,8 @@ const App: FC = () => {
 
       console.log('✅ Bundling successful');
       setCode(result.outputFiles[0].text);
+
+      eval(code);
     } catch (err: any) {
       console.error('💥 Unable to bundle script');
     }
