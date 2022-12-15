@@ -13,6 +13,7 @@ import { fetchPlugin } from './plugins/fetch-plugin';
 
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
+  const iframe = useRef<any>(null);
   const [input, setInput] = useState('');
   const [code, setCode] = useState('');
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
@@ -22,7 +23,7 @@ const App: FC = () => {
       console.log('🕧 Starting Esbuild service...');
       await esbuild.initialize({
         worker: true,
-        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.6/esbuild.wasm',
+        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.7/esbuild.wasm',
       });
 
       console.log('✅ Esbuild started');
@@ -34,6 +35,8 @@ const App: FC = () => {
   };
 
   useEffect(() => {
+    if (ref.current) return;
+
     startService()
       .then(() => setIsDisabledSubmit(false))
       .catch((err: any) => console.error(err));
@@ -49,19 +52,31 @@ const App: FC = () => {
         bundle: true,
         write: false,
         plugins: [unpkgPathPlugin(), fetchPlugin(input.trim())],
-        define: {
-          global: 'window',
-        },
+        define: { global: 'window' },
       });
 
       console.log('✅ Bundling successful');
       setCode(result.outputFiles[0].text);
 
-      eval(code);
+      iframe.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
     } catch (err: any) {
       console.error('💥 Unable to bundle script');
     }
   };
+
+  const html = `
+    <html lang='en'>
+      <head><title>Code Preview</title></head>
+      <body>
+        <div id='root' />
+        <script>
+          window.addEventListener('message', event => {
+            eval(event.data);  
+          }, false)
+        </script>
+      </body>
+    </html>
+  `;
 
   return (
     <div>
@@ -77,7 +92,8 @@ const App: FC = () => {
       <button onClick={onClick} disabled={isDisabledSubmit}>
         Submit
       </button>
-      <pre>{code}</pre>
+      <br />
+      <iframe sandbox={'allow-scripts'} srcDoc={html} ref={iframe} />
     </div>
   );
 };
