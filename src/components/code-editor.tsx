@@ -4,6 +4,10 @@ import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 
+import { parse } from '@babel/parser';
+import traverse from '@babel/traverse';
+import MonacoJSXHighlighter from 'monaco-jsx-highlighter';
+
 import './code-editor.scss';
 
 interface CodeEditorProps {
@@ -16,6 +20,20 @@ const CodeEditor: FC<CodeEditorProps> = ({ initialValue, onChange }) => {
 
   const onMount: OnMount = (editor, monaco) => {
     ref.current = editor;
+
+    // Instantiate the highlighter
+    const monacoJSXHighlighter = new MonacoJSXHighlighter(
+      monaco,
+      parse,
+      traverse,
+      editor
+    );
+
+    // Activate highlighting (debounceTime default: 100ms)
+    monacoJSXHighlighter.highlightOnDidChangeModelContent(100);
+
+    // Activate JSX commenting
+    monacoJSXHighlighter.addJSXCommentCommand();
   };
 
   const onFormatClick: MouseEventHandler<HTMLButtonElement> = () => {
