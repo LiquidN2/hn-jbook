@@ -4,6 +4,8 @@ import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 
+import './code-editor.scss';
+
 interface CodeEditorProps {
   initialValue: string;
   onChange(value: string): void;
@@ -21,25 +23,33 @@ const CodeEditor: FC<CodeEditorProps> = ({ initialValue, onChange }) => {
 
     // Get the current value of the editor
     const unformattedCode = ref.current?.getValue();
+    if (!unformattedCode) return;
 
     // Format the value
-    const formattedCode = prettier.format(unformattedCode, {
-      parser: 'babel',
-      plugins: [parser],
-      useTabs: false,
-      semi: true,
-      singleQuote: true,
-    });
+    const formattedCode = prettier
+      .format(unformattedCode, {
+        parser: 'babel',
+        plugins: [parser],
+        useTabs: false,
+        semi: true,
+        singleQuote: true,
+      })
+      .replace(/\n$/, '');
 
     // Set the formatted value in the editor
     ref.current?.setValue(formattedCode);
   };
 
   return (
-    <div>
-      <button onClick={onFormatClick}>Format</button>
+    <div className="editor-wrapper">
+      <button
+        className="button button-format is-success is-small"
+        onClick={onFormatClick}
+      >
+        Format
+      </button>
       <Editor
-        height="20vh"
+        height="500px"
         language="javascript"
         theme="vs-dark"
         options={{

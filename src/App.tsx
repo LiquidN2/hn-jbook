@@ -12,6 +12,8 @@ import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 import { fetchPlugin } from './plugins/fetch-plugin';
 import CodeEditor from './components/code-editor';
 
+import 'bulmaswatch/darkly/bulmaswatch.min.css';
+
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
   const iframe = useRef<any>(null);
