@@ -1,23 +1,18 @@
-import {
-  FC,
-  ChangeEvent,
-  MouseEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, MouseEventHandler, useEffect, useRef, useState } from 'react';
 import * as esbuild from 'esbuild-wasm';
 
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 import { fetchPlugin } from './plugins/fetch-plugin';
+
 import CodeEditor from './components/code-editor';
+import Preview from './components/preview';
 
 import 'bulmaswatch/darkly/bulmaswatch.min.css';
 
 const App: FC = () => {
   const ref = useRef<typeof esbuild | null>(null);
-  const iframe = useRef<any>(null);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(''); // Code input
+  const [code, setCode] = useState(''); // Compiled code
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(true);
 
   const startService = async () => {
@@ -25,7 +20,7 @@ const App: FC = () => {
       console.log('🕧 Starting Esbuild service...');
       await esbuild.initialize({
         worker: true,
-        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.7/esbuild.wasm',
+        wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.9/esbuild.wasm',
       });
 
       console.log('✅ Esbuild started');
@@ -47,9 +42,6 @@ const App: FC = () => {
   const onClick: MouseEventHandler<HTMLButtonElement> = async _e => {
     if (!ref.current || !input) return;
 
-    // Reload iframe srcdoc
-    iframe.current.srcdoc = html;
-
     // Bundle code
     try {
       console.log('🕧 Bundling input...');
@@ -62,39 +54,12 @@ const App: FC = () => {
       });
 
       // Send the bundled code to iframe for code exec
-      iframe.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
+      // iframe.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
+      setCode(result.outputFiles[0].text);
     } catch (err: any) {
       console.error('💥 Unable to bundle script');
     }
   };
-
-  const html = `
-    <html lang='en'>
-      <head>
-        <title>Code Preview</title>
-        <style>
-          .error { color: red }
-        </style>
-      </head>
-      <body>
-        <div id='root' />
-        <script>        
-           window.addEventListener('error', event => {
-             const root = document.getElementById('root');
-             root.innerHTML = '<div class="error"><h4>Runtime Error</h4>' + event.error + '</div>';
-           })
-          
-          window.addEventListener('message', event => {
-            try { 
-              eval(event.data);
-            } catch (err) {
-              throw err;
-            }
-          }, false);
-        </script>
-      </body>
-    </html>
-  `;
 
   return (
     <div>
@@ -107,7 +72,7 @@ const App: FC = () => {
         Submit
       </button>
       <br />
-      <iframe sandbox={'allow-scripts'} srcDoc={html} ref={iframe} />
+      <Preview code={code} />
     </div>
   );
 };
