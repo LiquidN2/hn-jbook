@@ -2,6 +2,7 @@ import { FC, useEffect, useRef } from 'react';
 
 interface PreviewProps {
   code: string;
+  bundlingError: string;
 }
 
 const html = `

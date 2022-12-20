@@ -9,10 +9,12 @@ import 'bulmaswatch/darkly/bulmaswatch.min.css';
 const App: FC = () => {
   const [input, setInput] = useState(''); // Code input
   const [code, setCode] = useState(''); // Compiled code
+  const [bundlingError, setBundlingError] = useState<any>(null);
 
   const onClick: MouseEventHandler<HTMLButtonElement> = async _e => {
-    const result = await bundle(input);
-    setCode(result.code);
+    const { code: bundledCode, err } = await bundle(input);
+    setCode(bundledCode);
+    setBundlingError(err);
   };
 
   return (
@@ -24,7 +26,7 @@ const App: FC = () => {
       <br />
       <button onClick={onClick}>Submit</button>
       <br />
-      <Preview code={code} />
+      <Preview code={code} bundlingError={bundlingError} />
     </div>
   );
 };

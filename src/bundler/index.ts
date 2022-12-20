@@ -11,13 +11,13 @@ interface BundledOutput {
 
 let service: typeof esbuild | undefined;
 
-export default async (rawCode: string): Promise<BundledOutput> => {
+export default async function bundle(rawCode: string): Promise<BundledOutput> {
   // Check if esbuild service has been initialized
   if (!service) {
     debugNote('🕧 Starting Esbuild service...');
     await esbuild.initialize({
       worker: true,
-      wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.9/esbuild.wasm',
+      wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.10/esbuild.wasm',
     });
 
     debugNote('✅ Esbuild started');
@@ -50,4 +50,4 @@ export default async (rawCode: string): Promise<BundledOutput> => {
 
     throw err;
   }
-};
+}
