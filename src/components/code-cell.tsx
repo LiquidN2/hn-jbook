@@ -2,7 +2,11 @@ import { FC, MouseEventHandler, useState } from 'react';
 
 import CodeEditor from './code-editor';
 import Preview from './preview';
+import Resizable from './resizable';
+
 import bundle from '../bundler';
+
+import './code-cell.scss';
 
 const CodeCell: FC = () => {
   const [input, setInput] = useState(''); // Code input
@@ -16,16 +20,15 @@ const CodeCell: FC = () => {
   };
 
   return (
-    <div>
-      <CodeEditor
-        initialValue={'Enter your code below'}
-        onChange={value => setInput(value)}
-      />
-      <br />
-      <button onClick={onClick}>Submit</button>
-      <br />
-      <Preview code={code} bundlingError={bundlingError} />
-    </div>
+    <Resizable direction="vertical">
+      <div className="code-cell-wrapper">
+        <CodeEditor
+          initialValue={'// Enter your code below\n'}
+          onChange={value => setInput(value)}
+        />
+        <Preview code={code} bundlingError={bundlingError} />
+      </div>
+    </Resizable>
   );
 };
 

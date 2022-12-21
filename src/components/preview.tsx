@@ -45,7 +45,14 @@ const Preview: FC<PreviewProps> = ({ code }) => {
     ref.current.contentWindow?.postMessage(code, '*');
   }, [code]);
 
-  return <iframe sandbox={'allow-scripts'} srcDoc={html} ref={ref} />;
+  return (
+    <iframe
+      style={{ flexGrow: 1 }}
+      sandbox={'allow-scripts'}
+      srcDoc={html}
+      ref={ref}
+    />
+  );
 };
 
 export default Preview;
