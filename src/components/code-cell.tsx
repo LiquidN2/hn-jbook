@@ -22,10 +22,12 @@ const CodeCell: FC = () => {
   return (
     <Resizable direction="vertical">
       <div className="code-cell-wrapper">
-        <CodeEditor
-          initialValue={'// Enter your code below\n'}
-          onChange={value => setInput(value)}
-        />
+        <Resizable direction="horizontal">
+          <CodeEditor
+            initialValue={'// Enter your code below\n'}
+            onChange={value => setInput(value)}
+          />
+        </Resizable>
         <Preview code={code} bundlingError={bundlingError} />
       </div>
     </Resizable>
