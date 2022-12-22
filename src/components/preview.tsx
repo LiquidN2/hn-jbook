@@ -1,5 +1,7 @@
 import { FC, useEffect, useRef } from 'react';
 
+import './preview.scss';
+
 interface PreviewProps {
   code: string;
   bundlingError: string;
@@ -47,7 +49,7 @@ const Preview: FC<PreviewProps> = ({ code }) => {
 
   return (
     <iframe
-      style={{ flexGrow: 1, alignSelf: 'stretch', height: '100%' }}
+      className="preview-wrapper"
       sandbox={'allow-scripts'}
       srcDoc={html}
       ref={ref}
