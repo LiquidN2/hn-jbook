@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import CodeEditor from './code-editor';
 import Preview from './preview';
@@ -13,11 +13,19 @@ const CodeCell: FC = () => {
   const [code, setCode] = useState(''); // Compiled code
   const [bundlingError, setBundlingError] = useState<any>(null);
 
-  const onClick: MouseEventHandler<HTMLButtonElement> = async _e => {
-    const { code: bundledCode, err } = await bundle(input);
-    setCode(bundledCode);
-    setBundlingError(err);
-  };
+  useEffect(() => {
+    // Start code bundling 1 second after typing stop
+    const codeBundlingTimer = setTimeout(async () => {
+      const { code: bundledCode, err } = await bundle(input);
+      setCode(bundledCode);
+      setBundlingError(err);
+    }, 1000);
+
+    // Clear timer when typing start
+    return () => {
+      clearTimeout(codeBundlingTimer);
+    };
+  }, [input]);
 
   return (
     <Resizable direction="vertical">
