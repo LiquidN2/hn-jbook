@@ -18,6 +18,13 @@ const CustomResizable: FC<CustomResizableProps> = ({ direction, children }) => {
           defaultSize: { height: 300, width: Infinity },
           minHeight: window.innerHeight * 0.1,
           maxHeight: window.innerHeight * 0.9,
+          onResize(_event, _direction, elementRef, _delta) {
+            (
+              elementRef.querySelector(
+                '.resizable--horizontal'
+              ) as HTMLDivElement
+            ).style.height = '100%';
+          },
         }
       : {
           handleClasses: {
@@ -28,7 +35,14 @@ const CustomResizable: FC<CustomResizableProps> = ({ direction, children }) => {
           maxWidth: window.innerWidth * 0.75,
         };
 
-  return <Resizable {...resizableProps}>{children}</Resizable>;
+  return (
+    <Resizable
+      className={`resizable resizable--${direction}`}
+      {...resizableProps}
+    >
+      {children}
+    </Resizable>
+  );
 };
 
 export default CustomResizable;
