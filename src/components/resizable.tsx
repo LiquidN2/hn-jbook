@@ -22,7 +22,7 @@ const CustomResizable: FC<CustomResizableProps> = ({ direction, children }) => {
       timer = setTimeout(() => {
         setInnerWidth(window.innerWidth);
         setInnerHeight(window.innerHeight);
-        if (window.innerWidth * 0.75 < width) {
+        if (width < window.innerWidth * 0.75) {
           setWidth(window.innerWidth * 0.75);
         }
       }, 100);

@@ -11,14 +11,16 @@ import './code-cell.scss';
 const CodeCell: FC = () => {
   const [input, setInput] = useState(''); // Code input
   const [code, setCode] = useState(''); // Compiled code
-  const [bundlingError, setBundlingError] = useState<any>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!input) return;
+
     // Start code bundling 1 second after typing stop
     const codeBundlingTimer = setTimeout(async () => {
-      const { code: bundledCode, err } = await bundle(input);
-      setCode(bundledCode);
-      setBundlingError(err);
+      const output = await bundle(input);
+      setCode(output.code);
+      setError(output.err);
     }, 1000);
 
     // Clear timer when typing start
@@ -36,7 +38,7 @@ const CodeCell: FC = () => {
             onChange={value => setInput(value)}
           />
         </Resizable>
-        <Preview code={code} bundlingError={bundlingError} />
+        <Preview code={code} bundlingError={error} />
       </div>
     </Resizable>
   );

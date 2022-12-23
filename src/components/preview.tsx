@@ -17,10 +17,10 @@ const html = `
       </style>
     </head>
     <body>
-      <div id='root' />
+      <div id="preview-root" />
       <script>        
         const handleError = error => {
-          const root = document.getElementById('root');
+          const root = document.getElementById('preview-root');
           root.innerHTML = '<div class="error"><h4>Runtime Error</h4>' + error + '</div>';
         };
      
@@ -34,7 +34,7 @@ const html = `
   </html>
 `;
 
-const Preview: FC<PreviewProps> = ({ code }) => {
+const Preview: FC<PreviewProps> = ({ code, bundlingError }) => {
   const ref = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
@@ -43,17 +43,20 @@ const Preview: FC<PreviewProps> = ({ code }) => {
     // Reset iframe srcdoc
     ref.current.srcdoc = html;
 
-    // Send the bundled code to the iframe via message event
-    ref.current.contentWindow?.postMessage(code, '*');
+    // Ensure sufficient time to initialize srcdoc html
+    setTimeout(() => {
+      // Send the bundled code to the iframe via message event
+      (ref.current as HTMLIFrameElement).contentWindow?.postMessage(code, '*');
+    }, 50);
   }, [code]);
 
+  console.log('rendering preview component...');
+
   return (
-    <iframe
-      className="preview-wrapper"
-      sandbox={'allow-scripts'}
-      srcDoc={html}
-      ref={ref}
-    />
+    <div className="preview-wrapper">
+      {bundlingError && <div className="preview-err">{bundlingError}</div>}
+      <iframe sandbox={'allow-scripts'} srcDoc={html} ref={ref} />
+    </div>
   );
 };
 
