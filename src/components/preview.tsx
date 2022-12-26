@@ -50,8 +50,6 @@ const Preview: FC<PreviewProps> = ({ code, bundlingError }) => {
     }, 50);
   }, [code]);
 
-  console.log('rendering preview component...');
-
   return (
     <div className="preview-wrapper">
       {bundlingError && <div className="preview-err">{bundlingError}</div>}
