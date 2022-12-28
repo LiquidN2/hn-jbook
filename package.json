@@ -33,7 +33,7 @@
     "axios": "^1.2.1",
     "bulmaswatch": "^0.8.1",
     "dotenv": "^16.0.3",
-    "esbuild-wasm": "^0.16.11",
+    "esbuild-wasm": "^0.16.12",
     "localforage": "^1.10.0",
     "monaco-editor": "^0.34.1",
     "monaco-jsx-highlighter": "^2.0.4",
