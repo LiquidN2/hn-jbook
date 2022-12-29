@@ -1,4 +1,14 @@
 .md-editor-wrapper {
+  .wmde-markdown {
+    ul {
+      list-style: disc;
+    }
+
+    ol {
+      list-style: decimal;
+    }
+  }
+
   .w-md-editor-bar {
     height: 11px;
     width: 100%;
@@ -12,5 +22,11 @@
     svg {
       display: none;
     }
+  }
+}
+
+.md-editor-wrapper--finished {
+  .wmde-markdown {
+    background-color: #282f2f;
   }
 }

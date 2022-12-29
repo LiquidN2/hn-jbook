@@ -29,14 +29,22 @@ const TextEditor: FC = () => {
 
   if (editing)
     return (
-      <div ref={ref} className="md-editor-wrapper">
-        <MDEditor value={value} onChange={(text?: string) => setValue(text!)} />
+      <div ref={ref} className="md-editor-wrapper md-editor-wrapper--editing">
+        <MDEditor
+          value={value}
+          onChange={(text?: string) => setValue(text || '')}
+        />
       </div>
     );
 
   return (
-    <div className="md-editor-wrapper" onClick={() => setEditing(true)}>
-      <MDEditor.Markdown source={value} />
+    <div
+      className="md-editor-wrapper md-editor-wrapper--finished card"
+      onClick={() => setEditing(true)}
+    >
+      <div className="card-content">
+        <MDEditor.Markdown source={value} />
+      </div>
     </div>
   );
 };
