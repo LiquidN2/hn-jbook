@@ -17,7 +17,7 @@ export default async function bundle(rawCode: string): Promise<BundledOutput> {
     debugNote('🕧 Starting Esbuild service...');
     await esbuild.initialize({
       worker: true,
-      wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.12/esbuild.wasm',
+      wasmURL: 'https://unpkg.com/esbuild-wasm@0.16.14/esbuild.wasm',
     });
 
     debugNote('✅ Esbuild started');
